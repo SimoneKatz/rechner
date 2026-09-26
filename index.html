@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Was kostet dich eine Webseite, die niemand findet?</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--pink:#FF0080;--dark:#1A1A2E;--lime:#C6FF3D;--weiss:#fff;--rosa:#FFE3F1}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Archivo,system-ui,sans-serif;color:var(--dark);background:var(--weiss);overflow-x:hidden}
+  h1,h2{font-family:'Archivo Black',sans-serif;text-transform:uppercase;letter-spacing:-.01em;text-wrap:balance}
+  p{text-wrap:pretty}
+
+  /* Kopfleiste mit Marke */
+  .kopf{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:var(--dark);color:var(--weiss)}
+  .marke{font-family:'Archivo Black',sans-serif;font-size:clamp(12px,3.4vw,16px)!important;letter-spacing:0;white-space:nowrap;flex:none}
+  @media (max-width:680px){ .ton-text{display:none} .kbtn .wort{display:none} }
+  .kopf-rechts{display:flex;gap:8px}
+  .kbtn{font-family:Archivo,sans-serif;font-weight:800;font-size:13px;background:transparent;color:var(--weiss);border:2px solid var(--weiss);padding:7px 11px;cursor:pointer;white-space:nowrap}
+  .kbtn:hover{background:var(--weiss);color:var(--dark)}
+  .kbtn.an{background:var(--lime);color:var(--dark);border-color:var(--lime)}
+  /* Zurück leise: Lime-Pfeil vor dem Namen, Name führt zum Start */
+  .kopf-links{display:flex;align-items:center;gap:12px;min-width:0}
+  .pfeil{display:none;background:none;border:none;color:var(--lime);font-family:'Archivo Black',sans-serif;font-size:22px;line-height:1;cursor:pointer;padding:2px 4px;flex:none}
+  .pfeil:hover{transform:translateX(-3px)}
+  button.marke{background:none;border:none;color:var(--weiss);cursor:pointer;padding:0}
+  /* Marke wie in Angeboten/Rechnungen: Name groß, darunter klein gesperrt WEBDESIGN */
+  button.marke{display:flex;flex-direction:column;align-items:flex-start;line-height:1;text-align:left}
+  .marke-n{font-family:'Archivo Black',sans-serif;font-size:clamp(14px,3.8vw,18px);white-space:nowrap}
+  .marke-z{margin-top:5px;font-family:Archivo,sans-serif;font-weight:700;font-size:9px;letter-spacing:.34em;text-transform:uppercase;opacity:.7}
+  .kopf-rechts{align-items:center}
+  /* Ton-Knopf B: pulsierender Kreis, lädt ein */
+  .ton-wrap{display:flex;align-items:center}
+  .ton-text{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:11px;letter-spacing:.12em;margin-right:10px;white-space:nowrap}
+  .puls{position:relative;width:38px;height:38px;border-radius:50%;background:var(--lime);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+  .puls svg{width:18px;height:18px}
+  .puls::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--lime);animation:ring 1.8s ease-out infinite}
+  .puls.an{background:var(--pink)}
+  .puls.an::after{animation:none;opacity:0}
+  .puls.an svg path{fill:#fff}
+  .puls.an svg path.welle{fill:none;stroke:#fff}
+  @keyframes ring{from{transform:scale(1);opacity:.9}to{transform:scale(1.8);opacity:0}}
+  @media (max-width:520px){ .ton-text{display:none} }
+
+  .screen{display:none;min-height:calc(100vh - 52px);padding:40px 18px 60px}
+  .screen.active{display:block;animation:rein .6s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rein{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  .wrap{max-width:1040px;margin:0 auto}
+
+  .btn{display:inline-block;font-family:'Archivo Black',sans-serif;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(14px,3.8vw,18px);padding:18px 30px;background:var(--lime);color:var(--dark);border:3px solid var(--dark);box-shadow:7px 7px 0 var(--dark);cursor:pointer;transition:transform .12s,box-shadow .12s;white-space:nowrap}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 var(--dark)}
+  .btn:active{transform:translate(5px,5px);box-shadow:2px 2px 0 var(--dark)}
+  .btn.pink{background:var(--pink);color:var(--weiss)}
+
+  /* 1 Start */
+  #start{background:var(--pink);color:var(--weiss);text-align:center}
+  #start.active,#ergebnis.active{display:flex;align-items:center}
+  #start .wrap{max-width:980px}
+  .kicker{display:inline-block;font-family:'Archivo Black',sans-serif;text-transform:uppercase;background:var(--lime);color:var(--dark);font-size:12px;letter-spacing:.12em;padding:8px 12px;border:3px solid var(--dark);margin-bottom:28px}
+  #start h1{font-size:clamp(38px,8.4vw,92px);line-height:1;margin-bottom:28px}
+  #start h1 em{font-style:normal;color:var(--lime)}
+  /* Fassung 7: Taschenlampe + Untertitel C */
+  #start{position:relative;overflow:hidden;cursor:crosshair;justify-content:center}
+  #start .wrap{position:relative;z-index:2}
+  @media (max-width:700px){ #start{padding-top:130px;padding-bottom:150px} }
+  .suche{position:absolute;inset:0;pointer-events:none}
+  .suche span{position:absolute;white-space:nowrap;font-weight:700;font-size:clamp(14px,1.6vw,20px);color:#FFD6EA;opacity:0;transform:translateY(6px);transition:opacity .8s ease,transform .8s ease}
+  .suche span.an{opacity:.45;transform:none}
+  .suche span::before{content:"";display:inline-block;width:.8em;height:.8em;border:2.5px solid currentColor;border-radius:50%;margin-right:.45em;vertical-align:-.05em;box-shadow:.32em .32em 0 -.26em currentColor}
+  .kegel{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle 190px at var(--x,50%) var(--y,50%),rgba(255,255,255,.22),transparent 70%)}
+  .etikett{display:block;font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:11px;letter-spacing:.14em;color:var(--dark);margin-bottom:8px}
+  #start .lead{max-width:none;font-size:clamp(18px,2.6vw,24px);font-weight:600;text-wrap:balance}
+  .unterknopf{margin-top:14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;opacity:.9}
+  @media (prefers-reduced-motion:reduce){ .suche,.kegel{display:none} }
+  .kicker{white-space:nowrap}
+  @media (max-width:400px){ .kicker{font-size:10px;letter-spacing:.08em} .marke{font-size:10px!important} .kopf{gap:6px} .kopf-rechts{gap:5px} }
+  .lead{font-size:clamp(16px,2.2vw,20px);line-height:1.55;max-width:600px;margin:0 auto 36px;font-weight:500}
+
+  /* 2 Branche */
+  .step{font-family:'Archivo Black',sans-serif;text-transform:uppercase;color:var(--pink);font-size:13px;letter-spacing:.12em;margin-bottom:10px}
+  h2{font-size:clamp(28px,5vw,46px);line-height:1.05;margin-bottom:28px}
+  .kacheln{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .kachel{font-family:Archivo,sans-serif;text-align:left;background:var(--weiss);color:var(--dark);border:3px solid var(--dark);box-shadow:6px 6px 0 var(--dark);padding:22px 18px;cursor:pointer;transition:transform .12s,box-shadow .12s,background .12s}
+  .kachel b{display:block;font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:17px;line-height:1.15;margin-bottom:6px;text-wrap:balance}
+  .kachel small{font-size:14px;font-weight:500;opacity:.75}
+  .kachel:hover{background:var(--lime);transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--dark)}
+
+  /* 3 Rechner */
+  #rechner .wrap{max-width:680px}
+  .regler{background:var(--rosa);border:3px solid var(--dark);padding:20px 20px 24px;margin-bottom:16px}
+  .regler label{display:block;font-weight:800;font-size:17px;line-height:1.3;margin-bottom:4px;text-wrap:balance}
+  .regler .hint{font-size:14px;opacity:.7;margin-bottom:10px}
+  .wert{font-family:'Archivo Black',sans-serif;font-size:34px;color:var(--pink);margin-bottom:10px;white-space:nowrap}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:16px;background:linear-gradient(90deg,var(--pink) var(--p,50%),var(--weiss) var(--p,50%));border:3px solid var(--dark);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;background:var(--lime);border:4px solid var(--dark);cursor:grab;box-shadow:3px 3px 0 var(--dark)}
+  input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:0;background:var(--lime);border:4px solid var(--dark);cursor:grab}
+  .formel{font-size:13px;opacity:.65;line-height:1.5;margin:6px 0 30px}
+  .rechnen{text-align:center}
+  .tontipp{margin-top:20px;font-size:14px;font-weight:600;opacity:.75;text-align:center}
+  .tontipp button{font:inherit;font-weight:800;background:none;border:none;color:var(--pink);text-decoration:underline;cursor:pointer}
+
+  /* 4 Ergebnis: eigene Seite, großes Drama */
+  #ergebnis{background:var(--pink);color:var(--weiss);text-align:center}
+  #ergebnis .wrap{max-width:760px}
+  .erg-label{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:14px;letter-spacing:.2em;color:var(--lime);margin-bottom:18px;opacity:0}
+  .endzahl{display:inline-block;font-family:'Archivo Black',sans-serif;font-size:clamp(50px,13vw,112px);line-height:1;background:var(--lime);color:var(--dark);border:4px solid var(--dark);box-shadow:12px 12px 0 var(--dark);padding:14px 24px;white-space:nowrap;opacity:0;transform:scale(.6)}
+  .erg-monat{margin-top:22px;font-weight:800;font-size:18px;opacity:0}
+  .erg-rest{opacity:0;transform:translateY(20px);margin-top:44px}
+  #ergebnis h2{color:var(--weiss);margin-bottom:18px}
+  #ergebnis .lead{margin:0 auto 34px}
+  .zahlen-aendern{background:none;border:none;color:var(--weiss);font-family:Archivo,sans-serif;font-weight:800;font-size:15px;text-decoration:underline;cursor:pointer;margin:30px auto 0;display:block}
+  #ergebnis.los .erg-label{animation:auf .6s .1s forwards}
+  #ergebnis.los .endzahl{animation:gross .9s .35s cubic-bezier(.2,1.4,.4,1) forwards}
+  #ergebnis.los .erg-monat{animation:auf .6s 3.3s forwards}
+  #ergebnis.los .erg-rest{animation:hoch .7s 3.8s forwards}
+  /* Fassung 6: Enthüllung C, Fragezeichen-Deckel löst sich auf, Zahl wird scharf */
+  .endzahl{position:relative;overflow:hidden}
+  .endzahl .zahl{display:inline-block;filter:blur(16px)}
+  .endzahl .deckel{position:absolute;inset:-12px;background:radial-gradient(circle at 30% 40%,#ff4fa7,var(--pink) 60%);display:flex;align-items:center;justify-content:center;color:var(--weiss);font-size:1em}
+  #ergebnis.los .endzahl .deckel{animation:rauch 1.6s 1.7s ease-out forwards}
+  #ergebnis.los .endzahl .zahl{animation:scharf 1.4s 2s ease-out forwards}
+  @keyframes rauch{0%{opacity:1;filter:blur(0);transform:scale(1)}40%{opacity:.8;filter:blur(8px)}100%{opacity:0;filter:blur(28px);transform:scale(1.35) translateY(-14px)}}
+  @keyframes scharf{to{filter:blur(0)}}
+  @keyframes auf{to{opacity:1}}
+  @keyframes gross{to{opacity:1;transform:scale(1)}}
+  @keyframes hoch{to{opacity:1;transform:none}}
+
+  /* Fassung 5: Ergebnisseite dunkel wie in Fassung 1, mehr Drama */
+  #ergebnis{background:radial-gradient(ellipse at 50% 30%,rgba(255,0,128,.28),transparent 60%),var(--dark)}
+  #ergebnis .endzahl{box-shadow:12px 12px 0 var(--pink);border-color:var(--weiss);font-size:clamp(36px,11vw,112px);padding:12px 16px;max-width:100%}
+  #ergebnis .wrap{width:100%}
+  /* Fassung 12: Lime-Schein nach dem Enthüllen (Variante B, kein Blinken) */
+  #ergebnis .endzahl{transition:box-shadow 1.6s ease}
+  @media (max-width:520px){ #ergebnis .lead{font-size:14px;line-height:1.5;max-width:300px} }
+  #ergebnis .endzahl.glueht{box-shadow:12px 12px 0 var(--pink),0 0 40px 8px rgba(198,255,61,.55)}
+  #ergebnis .btn{box-shadow:7px 7px 0 var(--pink)}
+  #ergebnis h2{color:var(--weiss)}
+  #ergebnis h2 em{font-style:normal;color:var(--pink)}
+  .grund{font-size:14px;font-weight:700;color:var(--pink);margin:4px 0 12px;text-wrap:balance}
+  /* Fassung 9: reduziert (Variante F + leiser, unterstrichener Zurück-Link) */
+  .erg-monat{margin-top:22px;font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:12px;font-weight:400;letter-spacing:.14em;color:var(--lime)}
+  .erg-rest{margin-top:56px}
+  #ergebnis h2{font-size:clamp(20px,3.6vw,32px);margin-bottom:14px}
+  #ergebnis .lead{margin:0 auto 10px}
+  .zahlen-aendern{font-size:10px;letter-spacing:.14em;text-transform:uppercase;text-underline-offset:4px;opacity:.75;margin-top:24px}
+  .zahlen-aendern:hover{opacity:1}
+
+  #konfetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+  @media (max-width:820px){ .kacheln{grid-template-columns:1fr 1fr} }
+  @media (max-width:520px){
+    .kacheln{grid-template-columns:1fr}
+    .kopf{padding:10px 12px}
+    .marke{font-size:11px}
+    .kbtn{font-size:12px;padding:6px 8px}
+    .kbtn .wort{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.erg-label,.endzahl,.erg-monat,.erg-rest{opacity:1!important;transform:none!important}.endzahl .deckel{display:none}.endzahl .zahl{filter:none!important}}
+  /* Fassung 16: Laptop-Fenster mit QR-Code und WhatsApp Web */
+  .lp-hinter{position:fixed;inset:0;z-index:60;background:rgba(26,26,46,.78);display:none;align-items:center;justify-content:center;padding:18px}
+  .lp-hinter.auf{display:flex;animation:rein .35s ease}
+  .lp{position:relative;background:var(--weiss);color:var(--dark);border:4px solid var(--dark);box-shadow:10px 10px 0 var(--pink);padding:30px 28px 26px;max-width:380px;width:100%;text-align:center}
+  .lp h3{font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:22px;line-height:1.05;margin-bottom:8px}
+  .lp p{font-size:14px;line-height:1.5;margin-bottom:16px;text-wrap:balance}
+  .lp .qr{display:inline-block;padding:10px;background:#fff;border:3px solid var(--dark);margin-bottom:18px}
+  .lp .qr img,.lp .qr canvas{display:block;width:190px;height:190px}
+  .lp .oder{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:12px}
+  .lp .btn{font-size:14px;padding:13px 18px;text-decoration:none}
+  .lp .zu{position:absolute;top:8px;right:10px;background:none;border:none;font-size:26px;line-height:1;cursor:pointer;color:var(--dark)}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<canvas id="konfetti"></canvas>
+
+<!-- Laptop: weiter am Handy per QR-Code oder WhatsApp Web -->
+<div class="lp-hinter" id="lpHinter" onclick="if(event.target===this)lpZu()">
+  <div class="lp" role="dialog" aria-label="Gespräch sichern">
+    <button class="zu" onclick="lpZu()" aria-label="Schließen">×</button>
+    <h3>Weiter am Handy</h3>
+    <p>Scanne den Code mit deiner Handykamera. WhatsApp öffnet sich mit deiner fertigen Nachricht.</p>
+    <div class="qr" id="lpQr"></div>
+    <p class="oder">oder am Laptop</p>
+    <a class="btn" id="lpWeb" href="#" target="_blank" rel="noopener">Per WhatsApp Web</a>
+  </div>
+</div>
+
+<header class="kopf">
+  <div class="kopf-links">
+    <button class="pfeil" id="zurueck" onclick="zurueck()" aria-label="Einen Schritt zurück">←</button>
+    <button class="marke" onclick="zumStart()" aria-label="Zur Startseite"><span class="marke-n">Simone Katz🌸</span><span class="marke-z">Webdesign</span></button>
+  </div>
+  <div class="kopf-rechts">
+    <div class="ton-wrap"><span class="ton-text" id="tontext">Mit Ton?</span>
+      <button class="puls" id="ton" onclick="tonUmschalten()" aria-label="Ton an oder aus">
+        <svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#1A1A2E"/><path class="welle" d="M16 8.5c1.5 1 1.5 6 0 7M18.5 6c3 2 3 10 0 12" stroke="#1A1A2E" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </button></div>
+  </div>
+</header>
+
+<!-- 1 Start -->
+<section class="screen active" id="start">
+  <div class="suche" id="suche"></div>
+  <div class="kegel"></div>
+  <div class="wrap">
+    <span class="kicker">Dein 2-Minuten-Rechner</span>
+    <h1>Was kostet dich eine Webseite, die <em>niemand findet?</em></h1>
+    <span class="etikett">Die meisten fragen nach dem Preis.</span>
+    <p class="lead">Spannender ist, was dir ohne sie gerade entgeht.</p>
+    <button class="btn" onclick="zeige('branche')">Rechnen wir's aus</button>
+    <p class="unterknopf">Gerechnet mit deinen eigenen Zahlen.</p>
+  </div>
+</section>
+
+<!-- 2 Branche -->
+<section class="screen" id="branche">
+  <div class="wrap">
+    <p class="step">Schritt 1 von 2</p>
+    <h2>Was machst du?</h2>
+    <div class="kacheln">
+      <button class="kachel" onclick="waehle('beauty')"><b>Beauty &amp; Kosmetik</b><small>Lashes, Brows, Kosmetik, Nägel</small></button>
+      <button class="kachel" onclick="waehle('handwerk')"><b>Bau &amp; Handwerk</b><small>Bad, Fliesen, Sanierung, Technik</small></button>
+      <button class="kachel" onclick="waehle('gesundheit')"><b>Gesundheit &amp; Therapie</b><small>Therapie, Pflege, Begleitung</small></button>
+      <button class="kachel" onclick="waehle('coaching')"><b>Coaching &amp; Beratung</b><small>Coaching, Kurse, Beratung</small></button>
+      <button class="kachel" onclick="waehle('laden')"><b>Laden &amp; Manufaktur</b><small>Hofladen, Boutique, Schmuck</small></button>
+      <button class="kachel" onclick="waehle('andere')"><b>Andere Dienstleistung</b><small>Alles, was du anbietest</small></button>
+    </div>
+  </div>
+</section>
+
+<!-- 3 Rechner -->
+<section class="screen" id="rechner">
+  <div class="wrap">
+    <p class="step">Schritt 2 von 2</p>
+    <h2>Schieb die Regler auf deine Zahlen.</h2>
+    <div class="regler">
+      <label id="l1"></label>
+      <p class="hint">Dein durchschnittlicher Preis</p>
+      <div class="wert" id="w1"></div>
+      <input type="range" id="r1">
+    </div>
+    <div class="regler">
+      <label id="l2"></label>
+      <p class="hint" id="h2"></p>
+      <div class="wert" id="w2"></div>
+      <input type="range" id="r2">
+    </div>
+    <div class="regler">
+      <label id="l3"></label>
+      <p class="grund" id="grund"></p>
+      <div class="wert" id="w3"></div>
+      <input type="range" id="r3">
+    </div>
+    <p class="formel" id="formel"></p>
+    <div class="rechnen"><button class="btn pink" onclick="enthuellen()">Mein Ergebnis zeigen</button></div>
+    <p class="tontipp" id="tontipp">Mit Ton noch schöner: <button onclick="tonUmschalten()">Ton einschalten</button></p>
+  </div>
+</section>
+
+<!-- 4 Ergebnis -->
+<section class="screen" id="ergebnis">
+  <div class="wrap">
+    <div class="endzahl"><span class="zahl" id="endzahl">0 €</span><div class="deckel">?</div></div>
+    <p class="erg-monat" id="ergmonat"></p>
+    <div class="erg-rest">
+      <h2>So viel liegt gerade bei der <em>Konkurrenz.</em></h2>
+      <p class="lead"><span id="wie">Aus Suchen wird Buchen.</span> Lass uns in 20 Minuten anschauen, wie du dir dieses Geld zurückholst.</p>
+      <a class="btn" id="whatsapp" href="https://wa.me/491726013500" target="_blank" rel="noopener" style="text-decoration:none" onclick="lpAuf(event)">Gespräch sichern</a>
+      <button class="zahlen-aendern" onclick="zurueck()">Zahlen nochmal ändern</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* Wörter je Branche: keine Personen, Buchungen statt Menschen (Wording-Regel 25.9.2026) */
+const BR = {
+  beauty:     {l1:'Was bringt dir eine Buchung im Schnitt?', l2:'Wie oft im Jahr bucht jemand im Schnitt bei dir?', h2:'Stammgäste mitgerechnet', l3:'Wie viele neue Buchungsanfragen mehr pro Monat, wenn du online gefunden wirst?', einheit:'Buchung', p:{seg:[[20,300,5]],std:60}, h:[1,12,1,6], n:[1,20,1,3]},
+  handwerk:   {l1:'Was bringt dir ein Auftrag im Schnitt?', l2:'Wie oft im Jahr beauftragt dich jemand im Schnitt?', h2:'Im Handwerk oft nur 1×, das ist völlig okay', l3:'Wie viele neue Aufträge mehr pro Monat, wenn du online gefunden wirst?', einheit:'Auftrag', p:{seg:[[250,2000,250],[2500,10000,500],[11000,50000,1000]],std:5000}, h:[1,3,1,1], n:[1,10,1,1]},
+  gesundheit: {l1:'Was bringt dir ein Termin im Schnitt?', l2:'Wie oft im Jahr kommt jemand im Schnitt zu dir?', h2:'Folgetermine mitgerechnet', l3:'Wie viele neue Terminanfragen mehr pro Monat, wenn du online gefunden wirst?', einheit:'Termin', p:{seg:[[30,300,5]],std:90}, h:[1,20,1,8], n:[1,20,1,3]},
+  coaching:   {l1:'Was bringt dir eine Buchung im Schnitt?', l2:'Wie oft im Jahr bucht jemand im Schnitt bei dir?', h2:'Paket, Kurs oder Einzelstunde', l3:'Wie viele neue Buchungsanfragen mehr pro Monat, wenn du online gefunden wirst?', einheit:'Buchung', p:{seg:[[50,1000,25],[1100,2000,100],[2250,5000,250]],std:600}, h:[1,12,1,1], n:[1,20,1,2]},
+  laden:      {l1:'Was bringt dir ein Einkauf im Schnitt?', l2:'Wie oft im Jahr kauft jemand im Schnitt bei dir ein?', h2:'Stammkundschaft mitgerechnet', l3:'Wie viele neue Kund:innen mehr pro Monat, wenn du online gefunden wirst?', einheit:'Einkauf', p:{seg:[[5,300,5]],std:40}, h:[1,52,1,10], n:[1,40,1,5]},
+  andere:     {l1:'Was bringt dir ein Auftrag im Schnitt?', l2:'Wie oft im Jahr beauftragt dich jemand im Schnitt?', h2:'Wiederholungen mitgerechnet', l3:'Wie viele neue Anfragen mehr pro Monat, wenn du online gefunden wirst?', einheit:'Auftrag', p:{seg:[[20,500,10],[550,1000,50],[1100,5000,100]],std:300}, h:[1,12,1,2], n:[1,20,1,3]}
+};
+let B = BR.beauty, summe = 0, verlauf = ['start'];
+const $ = id => document.getElementById(id);
+const euro = n => Math.round(n).toLocaleString('de-DE') + ' €';
+
+function zeige(id, ohneVerlauf){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active','los'));
+  $(id).classList.add('active');
+  if(id==='start' && window.verteilen) requestAnimationFrame(verteilen);
+  if(!ohneVerlauf && verlauf[verlauf.length-1]!==id) verlauf.push(id);
+  $('zurueck').style.display = id==='start' ? 'none' : 'inline-block';
+  window.scrollTo({top:0});
+}
+/* Laptop erkennen: feine Maus und breiter Bildschirm. Dann Fenster mit QR-Code statt direkt WhatsApp */
+function istLaptop(){ return matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth > 820; }
+function lpAuf(e){
+  if(!istLaptop()) return;            /* Handy: Link öffnet WhatsApp direkt */
+  e.preventDefault();
+  const ziel=$('whatsapp').href, box=$('lpQr');
+  box.innerHTML='';
+  if(window.QRCode){ new QRCode(box,{text:ziel,width:190,height:190,colorDark:'#1A1A2E',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); box.style.display='inline-block'; }
+  else { box.style.display='none'; }
+  $('lpHinter').classList.add('auf');
+}
+function lpZu(){ $('lpHinter').classList.remove('auf'); }
+addEventListener('keydown',e=>{ if(e.key==='Escape') lpZu(); });
+function zumStart(){ verlauf=['start']; zeige('start',true); }
+function zurueck(){ if(verlauf.length>1){ verlauf.pop(); zeige(verlauf[verlauf.length-1], true); } }
+/* Preis-Regler unten fein, oben grob: Liste erlaubter Werte aus Abschnitten */
+let PV=[];
+function stufen(seg){ const w=[]; seg.forEach(([a,b,s])=>{ for(let v=a; v<=b; v+=s) if(!w.includes(v)) w.push(v); }); return w; }
+function setR(r,[a,b,s,v]){ r.min=a; r.max=b; r.step=s; r.value=v; }
+
+function waehle(k){
+  B = BR[k];
+  PV = stufen(B.p.seg); setR($('r1'),[0,PV.length-1,1,Math.max(0,PV.indexOf(B.p.std))]); setR($('r2'),B.h); setR($('r3'),B.n);
+  $('l1').textContent=B.l1; $('l2').textContent=B.l2; $('h2').textContent=B.h2; $('l3').textContent=B.l3;
+  /* Warum (Fassung 10): Verb passt sich der Branche an */
+  const verb = {Buchung:['Gebucht','Buchen'], Termin:['Gebucht','Buchen'], Auftrag:['Beauftragt','Anfragen'], Einkauf:['Gekauft','Kaufen']}[B.einheit];
+  $('grund').textContent = `Gesucht wird online. ${verb[0]} wird beim Treffer, der überzeugt.`;
+  $('wie').textContent = `Aus Suchen wird ${verb[1]}.`;
+  $('formel').textContent = `Gerechnet wird nur mit deinen eigenen Zahlen: neue Anfragen pro Monat × 12 × Wert pro ${B.einheit} × wie oft im Jahr.`;
+  rechne(); zeige('rechner');
+}
+function fuell(r){ r.style.setProperty('--p', ((r.value-r.min)/(r.max-r.min)*100)+'%'); }
+function rechne(){
+  const p=PV[+$('r1').value],h=+$('r2').value,n=+$('r3').value;
+  ['r1','r2','r3'].forEach(i=>fuell($(i)));
+  $('w1').textContent=euro(p); $('w2').textContent=h+'×'; $('w3').textContent=n;
+  summe=n*12*p*h;
+}
+['r1','r2','r3'].forEach(i=>$(i).addEventListener('input',rechne));
+
+let anim;
+function zaehle(el, bis, dauer){
+  cancelAnimationFrame(anim); const t0=performance.now();
+  const f=t=>{const x=Math.min(1,(t-t0)/dauer),e=1-Math.pow(1-x,3); el.textContent=euro(bis*e); if(x<1) anim=requestAnimationFrame(f);};
+  anim=requestAnimationFrame(f);
+}
+function enthuellen(){
+  zeige('ergebnis');
+  $('endzahl').textContent=euro(summe);
+  $('ergmonat').textContent=euro(summe/12)+' jeden Monat';
+  /* WhatsApp mit vorgeschriebener Nachricht, Ergebnis wird eingesetzt */
+  const nachricht=`Hey Simone,\ndein Rechner hat mir gerade ${euro(summe)} um die Ohren gehauen 😅\nLass uns reden!\nFreu mich auf deinen Anruf 🌸`;
+  $('whatsapp').href='https://wa.me/491726013500?text='+encodeURIComponent(nachricht);
+  $('lpWeb').href='https://web.whatsapp.com/send?phone=491726013500&text='+encodeURIComponent(nachricht);
+  void $('ergebnis').offsetWidth; $('ergebnis').classList.add('los');
+  setTimeout(glitzer,1500);
+  setTimeout(konfetti,3000);
+  const box=document.querySelector('#ergebnis .endzahl'); box.classList.remove('glueht');
+  clearTimeout(window.glTimer); window.glTimer=setTimeout(()=>box.classList.add('glueht'),3200);
+}
+
+/* Ton „Glitzer": leises Aufrauschen, dann perlende Glöckchen. Nur nach Einschalten. */
+let tonAn=false, ctx, hall;
+function tonUmschalten(){
+  tonAn=!tonAn;
+  $('ton').classList.toggle('an',tonAn); $('tontext').textContent = tonAn ? 'Ton an' : 'Mit Ton?';
+  $('tontipp').innerHTML = tonAn ? 'Ton ist an. <button onclick="tonUmschalten()">Ausschalten</button>' : 'Mit Ton noch schöner: <button onclick="tonUmschalten()">Ton einschalten</button>';
+  if(tonAn) tonStart();
+}
+function tonStart(){
+  if(!ctx){
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const len=ctx.sampleRate*2.8, ir=ctx.createBuffer(2,len,ctx.sampleRate);
+    for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);}
+    hall=ctx.createConvolver(); hall.buffer=ir;
+    const hg=ctx.createGain(); hg.gain.value=.55; hall.connect(hg).connect(ctx.destination);
+  }
+  if(ctx.state==='suspended') ctx.resume();
+}
+function glocke(f,t,dauer,laut,ziel){
+  [1,2.76,5.4].forEach((m,i)=>{
+    const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f*m;
+    const g=ctx.createGain(); const l=laut/(i*2.2+1);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(l,t+.008); g.gain.exponentialRampToValueAtTime(.0001,t+dauer/(i+1));
+    o.connect(g).connect(ziel); o.start(t); o.stop(t+dauer+.1);
+  });
+}
+function glitzer(){
+  if(!tonAn||!ctx) return;
+  const t=ctx.currentTime, out=ctx.createGain(); out.gain.value=.5; out.connect(ctx.destination); out.connect(hall);
+  const b=ctx.createBuffer(1,ctx.sampleRate*1.4,ctx.sampleRate),d=b.getChannelData(0); for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const q=ctx.createBufferSource(); q.buffer=b;
+  const f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=3;
+  f.frequency.setValueAtTime(800,t); f.frequency.exponentialRampToValueAtTime(9000,t+1.2);
+  const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.12,t+.9); g.gain.exponentialRampToValueAtTime(.001,t+1.4);
+  q.connect(f).connect(g).connect(out); q.start(t);
+  [1046.5,1318.5,1568,2093,2637,3136].forEach((fq,i)=>glocke(fq,t+.55+i*.11,1.8,.09,out));
+}
+
+/* Konfetti */
+function konfetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=$('konfetti'),x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const fb=['#FF0080','#C6FF3D','#1A1A2E','#ffffff'];
+  const t=Array.from({length:160},()=>({x:c.width/2,y:c.height*.4,vx:(Math.random()-.5)*18,vy:Math.random()*-17-4,r:Math.random()*9+5,f:fb[Math.random()*4|0],w:Math.random()*6}));
+  let n=0;(function l(){x.clearRect(0,0,c.width,c.height);
+    t.forEach(q=>{q.vy+=.45;q.x+=q.vx;q.y+=q.vy;q.vx*=.99;q.w+=.2;x.save();x.translate(q.x,q.y);x.rotate(q.w);x.fillStyle=q.f;x.fillRect(-q.r/2,-q.r/4,q.r,q.r/2);x.restore();});
+    if(++n<160) requestAnimationFrame(l); else x.clearRect(0,0,c.width,c.height);})();
+}
+/* Taschenlampe auf der Startseite: Suchbegriffe aller Branchen, immer nur einer sichtbar */
+const BEGRIFFE = [
+  /* Simones Zielgruppe (Beauty, Wellness, Braut, Coaching für Frauen), gemischt, damit auch am Handy die Vielfalt sichtbar ist */
+  'coach für selbstständige frauen','kosmetikstudio in meiner nähe','business coaching frauen','brautstyling ulm','massage in der nähe',
+  'lash lifting stuttgart','fotografin hochzeit','day spa wochenende',
+  'wimpernverlängerung pforzheim','braut make up probetermin','brow lamination karlsruhe','make up artist hochzeit',
+  'permanent make up augenbrauen','hydrafacial heilbronn','gesichtsbehandlung gegen falten','maniküre termin heute'
+];
+const feld=$('suche'), startEl=$('start');
+let aktiv=null;
+function verteilen(){
+  if(!startEl.classList.contains('active')) return;
+  feld.innerHTML=''; aktiv=null;
+  const w=startEl.clientWidth, h=startEl.clientHeight, sr=startEl.getBoundingClientRect(), frei=[];
+  document.querySelectorAll('#start .wrap > *').forEach(e=>{
+    const rg=document.createRange(); rg.selectNodeContents(e);
+    const rs=e.classList.contains('kicker')||e.classList.contains('btn') ? [e.getBoundingClientRect()] : [...rg.getClientRects()];
+    rs.forEach(r=>frei.push({l:r.left-sr.left-28,r:r.right-sr.left+28,o:r.top-sr.top-16,u:r.bottom-sr.top+16}));
+  });
+  const belegt=[];
+  BEGRIFFE.forEach((b,nr)=>{
+    const el=document.createElement('span'); el.textContent=b; feld.appendChild(el);
+    const bw=el.offsetWidth, bh=el.offsetHeight;
+    for(let v=0; v<400; v++){
+      /* der erste Begriff (Coach für selbstständige Frauen) sucht sich zuerst einen Platz oben links */
+      const oben = nr===0 && v<200;
+      const x1 = oben ? 16+(v%10)*14 : 8+Math.random()*(w-bw-16);
+      const y1 = oben ? 18+Math.floor(v/10)*14 : 10+Math.random()*(h-bh-30);
+      const x2=x1+bw, y2=y1+bh;
+      const trifft=f=>x2>f.l && x1<f.r && y2>f.o && y1<f.u;
+      if(!frei.some(trifft) && !belegt.some(trifft)){ el.style.left=x1+'px'; el.style.top=y1+'px'; belegt.push({l:x1-26,r:x2+26,o:y1-16,u:y2+16}); return; }
+    }
+    el.remove();
+  });
+}
+window.verteilen=verteilen;
+addEventListener('resize', verteilen);
+if(document.fonts) document.fonts.ready.then(verteilen);
+let zuletzt=0;
+function leuchte(x,y){
+  startEl.style.setProperty('--x',x+'px'); startEl.style.setProperty('--y',y+'px');
+  const sr=startEl.getBoundingClientRect(); let best=null, bd=190;
+  feld.querySelectorAll('span').forEach(el=>{
+    const r=el.getBoundingClientRect(), cx=r.left-sr.left+r.width/2, cy=r.top-sr.top+r.height/2, d=Math.hypot(cx-x,cy-y);
+    if(d<bd){bd=d;best=el;}
+  });
+  if(best!==aktiv){ if(aktiv) aktiv.classList.remove('an'); if(best) best.classList.add('an'); aktiv=best; }
+}
+startEl.addEventListener('pointermove', e=>{ const r=startEl.getBoundingClientRect(); leuchte(e.clientX-r.left, e.clientY-r.top); zuletzt=performance.now(); });
+let pos={x:0,y:0}, ziel=null, ankunft=0, vorher=null;
+function naechstesZiel(){
+  const liste=[...feld.querySelectorAll('span')].filter(e=>e!==vorher); if(!liste.length) return null;
+  const el=liste[Math.floor(Math.random()*liste.length)]; vorher=el;
+  const sr=startEl.getBoundingClientRect(), r=el.getBoundingClientRect();
+  return {x:r.left-sr.left+r.width/2, y:r.top-sr.top+r.height/2};
+}
+(function wandern(){
+  const jetzt=performance.now();
+  if(startEl.classList.contains('active') && jetzt-zuletzt>2500){
+    if(!ziel || !ziel.el || (Math.hypot(ziel.x-pos.x,ziel.y-pos.y)<3 && jetzt-ankunft>1600)){ ziel=naechstesZiel(); if(ziel) ziel.el=true; }
+    if(ziel){
+      if(Math.hypot(ziel.x-pos.x,ziel.y-pos.y)>=3){ pos.x+=(ziel.x-pos.x)*0.035; pos.y+=(ziel.y-pos.y)*0.035; ankunft=jetzt; }
+      leuchte(pos.x,pos.y);
+    }
+  }
+  requestAnimationFrame(wandern);
+})();
+
+waehle('beauty'); verlauf=['start']; zeige('start',true);
+</script>
+</body>
+</html>
