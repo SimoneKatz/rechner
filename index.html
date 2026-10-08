@@ -68,8 +68,8 @@
   #start .wrap{position:relative;z-index:2}
   @media (max-width:700px){ #start{padding-top:130px;padding-bottom:150px} }
   #start .wrap{transform:translateY(var(--hoch,0px))}
-  /* Simones Wahl 8.10.: Block auf PC/Laptop 25 px nach oben, damit der Knopf ganz sichtbar ist */
-  @media (min-width:701px){ #start .wrap{transform:translateY(var(--hoch,-25px))} }
+  /* 8.10.: auf PC/Laptop Luecken knapper statt Block verschieben, damit Etikett oben Luft hat und der Knopf ganz sichtbar ist */
+  @media (min-width:701px){ #start .kicker{margin-bottom:12px} #start h1{margin-bottom:20px} #start .lead{margin-bottom:22px} }
   .suche{position:absolute;inset:0;pointer-events:none}
   .suche span{position:absolute;white-space:nowrap;font-weight:700;font-size:clamp(14px,1.6vw,20px);color:#FFD6EA;opacity:0;transform:translateY(6px);transition:opacity .8s ease,transform .8s ease}
   .suche span.an{opacity:.45;transform:none}
@@ -484,7 +484,7 @@ waehle('beauty'); verlauf=['start']; zeige('start',true);
 if(new URLSearchParams(location.search).has("regler")){
   const r=document.documentElement.style, box=document.createElement("div");
   box.style.cssText="position:fixed;left:12px;bottom:12px;z-index:99;background:#1A1A2E;color:#fff;padding:14px 16px;font:600 14px Archivo,sans-serif;border:3px solid #C6FF3D;min-width:280px";
-  box.innerHTML="<div style=\"margin-bottom:8px\">Schriftgröße: <b id=rg1>"+Math.round(parseFloat(getComputedStyle(document.querySelector("#start h1")).fontSize))+"</b> px</div><input id=rs1 type=range min=60 max=110 value="+Math.round(parseFloat(getComputedStyle(document.querySelector("#start h1")).fontSize))+" style=\"width:100%\"><div style=\"margin:10px 0 8px\">Nach oben schieben: <b id=rg2>25</b> px</div><input id=rs2 type=range min=0 max=200 value=25 style=\"width:100%\"><div style=\"margin-top:10px;font-size:12px;opacity:.8\">Fenster: "+innerWidth+" × "+innerHeight+"</div>";
+  box.innerHTML="<div style=\"margin-bottom:8px\">Schriftgröße: <b id=rg1>"+Math.round(parseFloat(getComputedStyle(document.querySelector("#start h1")).fontSize))+"</b> px</div><input id=rs1 type=range min=60 max=110 value="+Math.round(parseFloat(getComputedStyle(document.querySelector("#start h1")).fontSize))+" style=\"width:100%\"><div style=\"margin:10px 0 8px\">Nach oben schieben: <b id=rg2>0</b> px</div><input id=rs2 type=range min=0 max=200 value=0 style=\"width:100%\"><div style=\"margin-top:10px;font-size:12px;opacity:.8\">Fenster: "+innerWidth+" × "+innerHeight+"</div>";
   document.body.appendChild(box);
   const a=()=>{const g=rs1.value,h=rs2.value;rg1.textContent=g;rg2.textContent=h;r.setProperty("--h1",g+"px");r.setProperty("--hoch",(-h)+"px")};
   rs1.oninput=a;rs2.oninput=a;
