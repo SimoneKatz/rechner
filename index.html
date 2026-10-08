@@ -481,6 +481,7 @@ waehle('beauty'); verlauf=['start']; zeige('start',true);
 </script>
 <script>
 /* echte Hoehe der Kopfleiste messen, damit der Startbereich genau ins Fenster passt */
+if("scrollRestoration" in history)history.scrollRestoration="manual";scrollTo(0,0);
 (function(){const k=document.querySelector(".kopf");if(!k)return;const m=()=>document.documentElement.style.setProperty("--kopfh",k.offsetHeight+"px");m();addEventListener("resize",m);})();
 /* Schieberegler nur mit ?regler im Link, fuer Simone zum Ausprobieren */
 if(new URLSearchParams(location.search).has("regler")){
