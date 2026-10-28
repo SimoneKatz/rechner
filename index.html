@@ -148,6 +148,7 @@
   .erg-monat{margin-top:22px;font-family:'Archivo Black',sans-serif;text-transform:uppercase;font-size:12px;font-weight:400;letter-spacing:.14em;color:var(--lime)}
   .erg-rest{margin-top:56px}
   #ergebnis h2{font-size:clamp(20px,3.6vw,32px);margin-bottom:14px}
+  @media (max-width:700px){ #ergebnis h2 br.zweizeilig{display:none} }
   #ergebnis .lead{margin:0 auto 10px}
   .zahlen-aendern{font-size:10px;letter-spacing:.14em;text-transform:uppercase;text-underline-offset:4px;opacity:.75;margin-top:24px}
   .zahlen-aendern:hover{opacity:1}
@@ -270,8 +271,8 @@
     <div class="endzahl"><span class="zahl" id="endzahl">0 €</span><div class="deckel">?</div></div>
     <p class="erg-monat" id="ergmonat"></p>
     <div class="erg-rest">
-      <h2>So viel liegt gerade bei der <em>Konkurrenz.</em></h2>
-      <p class="lead"><span id="wie">Aus Suchen wird Buchen.</span> Lass uns in 20 Minuten anschauen, wie du dir dieses Geld zurückholst.</p>
+      <h2>Das ist deine Zahl und sie liegt<br class="zweizeilig"> gerade bei der&nbsp;<em>Konkurrenz.</em></h2>
+      <p class="lead"><span id="wie" hidden></span>Monat für Monat, ob du hinschaust oder nicht. Lass uns in 20 Minuten anschauen, was dahintersteckt.</p>
       <a class="btn" id="whatsapp" href="https://wa.me/491726013500" target="_blank" rel="noopener" style="text-decoration:none" onclick="lpAuf(event)">Gespräch sichern</a>
       <button class="zahlen-aendern" onclick="zurueck()">Zahlen nochmal ändern</button>
     </div>
